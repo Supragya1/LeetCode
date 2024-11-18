@@ -1,27 +1,34 @@
 class MyCircularDeque {
-    int front, rear;
-    int[] queue;
-    int size,capacity;
+    class Node{
+        int data;
+        Node prev,next;
+        public Node(int data){
+            this.data =data;
+        }
+    }
+    int size,count;
+    Node front,rear;
     public MyCircularDeque(int k) {
-        this.capacity=k;
-        queue = new int[capacity];
-        this.front = 0;
-        this.rear = 0;
-        this.size=0;
+        this.size=k;
+        this.front=null;
+        this.rear=null;
+        this.count=0;
     }
     
     public boolean insertFront(int value) {
         if(isFull()){
             return false;
         }
-        if(front==0){
-            front = capacity-1;
+        Node newNode = new Node(value);
+        if(front==null && rear==null){
+            front = rear =newNode;
         }
         else{
-            front--;
+            newNode.next=front;
+            front.prev=newNode;
+            front=newNode;
         }
-        queue[front]=value;
-        size++;
+        count++;
         return true;
     }
     
@@ -29,14 +36,16 @@ class MyCircularDeque {
         if(isFull()){
             return false;
         }
-        queue[rear]=value;
-        if(rear==capacity-1){
-            rear=0;
+        Node newNode = new Node(value);
+        if(front==null && rear==null){
+            front = rear =newNode;
         }
         else{
-           rear++;
+            rear.next=newNode;
+            newNode.prev=rear;
+            rear= newNode;
         }
-        size++;
+        count++;
         return true;
     }
     
@@ -44,14 +53,14 @@ class MyCircularDeque {
         if (isEmpty()) {
             return false;
         }
-        queue[front]=-1;
-        if (front == capacity-1) {
-            front= 0;
+        if (front == rear) {
+            front= rear= null;
         }
         else{
-            front++;
+            front=front.next;
+            front.prev=null;
         }
-        size--;
+        count--;
         return true;
     }
     
@@ -59,14 +68,14 @@ class MyCircularDeque {
         if (isEmpty()) {
             return false;
         }
-        if (rear==0) {
-            rear=capacity-1;
+        if (front == rear) {
+            front = rear = null;
         }
         else{
-            rear--;
+            rear=rear.prev;
+            rear.next=null;
         }
-        queue[rear]=-1;
-        size--;
+        count--;
         return true;
     }
     
@@ -74,27 +83,22 @@ class MyCircularDeque {
         if (isEmpty()) {
             return -1;
         }
-        return queue[front];
+        return front.data;
     }
     
     public int getRear() {
         if (isEmpty()) {
             return -1;
         }
-        if(rear==0){
-            return queue[capacity-1];
-        }
-        else{
-            return queue[rear-1];
-        }
+        return rear.data;
     }
     
     public boolean isEmpty() {
-        return size==0;
+        return count==0;
     }
     
     public boolean isFull() {
-        return size==capacity;
+        return count==size;
     }
 }
 
